@@ -17,6 +17,11 @@ from mmcls.datasets import build_dataset
 from mmcls.models import build_classifier
 from mmcls.utils import collect_env, get_root_logger
 
+try:
+    import wandb
+    has_wandb = True
+except ImportError: 
+    has_wandb = False
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a model')
@@ -69,6 +74,11 @@ def parse_args():
         default='none',
         help='job launcher')
     parser.add_argument('--local_rank', type=int, default=0)
+    parser.add_argument('--log-wandb', action='store_true', default=False,
+                    help='log training and validation metrics to wandb')
+    parser.add_argument('--wandb-project', type=str, default='timm')
+    parser.add_argument('--wandb-entity', type=str, default='actnn')
+    parser.add_argument('--wandb-name', type=str, default=None)
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
@@ -86,6 +96,15 @@ def parse_args():
 
 def main():
     args = parse_args()
+
+    if args.log_wandb and (args.local_rank == 0):
+        if has_wandb:
+            wandb.init(
+                name=args.experiment if args.wandb_name is None else args.wandb_name, 
+                entity=args.wandb_entity, project=args.wandb_project, config=args)
+        else: 
+            _logger.warning("You've requested to log metrics to wandb but package not found. "
+                            "Metrics not being logged to wandb, try `pip install wandb`")
 
     cfg = Config.fromfile(args.config)
     if args.cfg_options is not None:
@@ -151,6 +170,7 @@ def main():
     meta['seed'] = args.seed
 
     model = build_classifier(cfg.model)
+    print(model)
     model.init_weights()
 
     datasets = [build_dataset(cfg.data.train)]

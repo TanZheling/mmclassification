@@ -11,7 +11,8 @@ model = dict(
         type='LinearClsHead',
         num_classes=100,
         in_channels=512,
-        loss=dict(type='CrossEntropyLoss', loss_weight=1.0)))
+        loss=dict(type='CrossEntropyLoss', loss_weight=1.0),
+        init_cfg=dict(type='Normal', layer='Linear', std=1)))
 dataset_type = 'CIFAR100'
 img_norm_cfg = dict(
     mean=[129.304, 124.07, 112.434], std=[68.17, 65.392, 70.418], to_rgb=False)
@@ -80,7 +81,8 @@ data = dict(
             dict(type='Collect', keys=['img'])
         ],
         test_mode=True))
-optimizer = dict(type='SGD', lr=0.1, momentum=0.9, weight_decay=0.0001)
+optimizer = dict(
+    type='SGD', lr=0.1, momentum=0.9, weight_decay=0.0001, nesterov=True)
 optimizer_config = dict(grad_clip=None)
 lr_config = dict(policy='step', step=[60, 120, 160], gamma=0.2)
 runner = dict(type='EpochBasedRunner', max_epochs=200)
@@ -94,7 +96,7 @@ log_config = dict(
             init_kwargs=dict(
                 project='mmcls',
                 entity='zlt',
-                name='mmcls-res18bs128-cifar100'))
+                name='mmcls-res18bs128-cifar100-clshead的std改成1'))
     ])
 dist_params = dict(backend='nccl')
 log_level = 'INFO'

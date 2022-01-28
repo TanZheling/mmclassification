@@ -169,6 +169,10 @@ def main():
     cfg.seed = args.seed
     meta['seed'] = args.seed
 
+    #multi-gpu-temp
+    #torch.cuda.set_device(args.local_rank)
+
+
     model = build_classifier(cfg.model)
     print(model)
     model.init_weights()

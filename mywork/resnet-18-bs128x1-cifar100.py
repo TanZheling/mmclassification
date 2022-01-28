@@ -12,6 +12,7 @@ model = dict(
         num_classes=100,
         in_channels=512,
         loss=dict(type='CrossEntropyLoss', loss_weight=1.0),
+        init_cfg=dict(type='Normal', layer='Linear', std=1)
     ))
 # dataset settings
 dataset_type = 'CIFAR100'
@@ -51,7 +52,7 @@ data = dict(
         test_mode=True))
 
 # optimizer
-optimizer = dict(type='SGD', lr=0.1, momentum=0.9, weight_decay=0.0001)
+optimizer = dict(type='SGD', lr=0.1, momentum=0.9, weight_decay=0.0001, nesterov=True)
 optimizer_config = dict(grad_clip=None)
 # learning policy
 lr_config = dict(policy='step', step=[60, 120, 160], gamma=0.2)
@@ -65,7 +66,7 @@ log_config = dict(
     hooks=[
         dict(type='TextLoggerHook'),
         dict(type='WandbLoggerHook', 
-        init_kwargs=dict(project='mmcls',entity='zlt', name='mmcls-res18bs128-cifar100')),
+        init_kwargs=dict(project='mmcls',entity='zlt', name='mmcls-res18bs128-cifar100-clshead的std改成1')),
     ])
 # yapf:enable
 

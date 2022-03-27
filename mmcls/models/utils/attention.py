@@ -330,6 +330,7 @@ class MultiheadAttention(BaseModule):
                  proj_drop=0.,
                  dropout_layer=dict(type='Dropout', drop_prob=0.),
                  qkv_bias=True,
+                 att_grad=True,
                  qk_scale=None,
                  proj_bias=True,
                  v_shortcut=False,
@@ -344,9 +345,15 @@ class MultiheadAttention(BaseModule):
         self.head_dims = embed_dims // num_heads
         self.scale = qk_scale or self.head_dims**-0.5
 
-        self.qkv = nn.Linear(self.input_dims, embed_dims * 3, bias=qkv_bias)
+        qkv = nn.Linear(self.input_dims, embed_dims * 3, bias=qkv_bias)
+        for param in qkv.parameters():
+            param.requires_grad=att_grad
+        self.qkv = qkv
         self.attn_drop = nn.Dropout(attn_drop)
-        self.proj = nn.Linear(embed_dims, embed_dims, bias=proj_bias)
+        proj = nn.Linear(embed_dims, embed_dims, bias=proj_bias)
+        for param in proj.parameters():
+            param.requires_grad=att_grad
+        self.proj = proj
         self.proj_drop = nn.Dropout(proj_drop)
 
         self.out_drop = DROPOUT_LAYERS.build(dropout_layer)

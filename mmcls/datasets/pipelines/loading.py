@@ -53,6 +53,7 @@ class LoadImageFromFile(object):
         results['filename'] = filename
         results['ori_filename'] = results['img_info']['filename']
         results['img'] = img
+        results['ori_img'] = img
         results['img_shape'] = img.shape
         results['ori_shape'] = img.shape
         num_channels = 1 if len(img.shape) < 3 else img.shape[2]

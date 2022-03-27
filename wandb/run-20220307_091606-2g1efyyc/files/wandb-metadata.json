@@ -1,0 +1,26 @@
+{
+    "os": "Linux-5.13.0-30-generic-x86_64-with-glibc2.17",
+    "python": "3.8.12",
+    "heartbeatAt": "2022-03-07T09:16:09.963094",
+    "startedAt": "2022-03-07T09:16:06.305502",
+    "docker": null,
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "gpu_count": 1,
+    "cpu_count": 64,
+    "cuda": null,
+    "args": [
+        "mywork/tent-resnet18-cifar10.py"
+    ],
+    "state": "running",
+    "program": "tools/tent.py",
+    "codePath": "tools/tent.py",
+    "git": {
+        "remote": "https://github.com/TanZheling/mmclassification.git",
+        "commit": "0d9e8a8d3ecb79e1afce61c6bf8ea592ef497b5e"
+    },
+    "email": null,
+    "root": "/run/determined/workdir/scratch/mmclassification",
+    "host": "92bfdb8f24de",
+    "username": "root",
+    "executable": "/opt/conda/bin/python"
+}

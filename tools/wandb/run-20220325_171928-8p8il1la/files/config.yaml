@@ -1,0 +1,101 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.12.11
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.8.12
+    start_time: 1648228768
+    t:
+      1:
+      - 1
+      - 37
+      - 41
+      2:
+      - 1
+      - 37
+      - 41
+      3:
+      - 13
+      - 16
+      4: 3.8.12
+      5: 0.12.11
+      8:
+      - 5
+cfg_options:
+  desc: null
+  value: null
+checkpoint:
+  desc: null
+  value: /run/determined/workdir/scratch/bishe/pretrained_model/INTERN_models/vit-b.pth
+config:
+  desc: null
+  value: ../mywork/vit-b.py
+corruption:
+  desc: null
+  value: gaussian_noise
+device:
+  desc: null
+  value: null
+gpu_collect:
+  desc: null
+  value: false
+gpu_ids:
+  desc: null
+  value: null
+launcher:
+  desc: null
+  value: none
+local_rank:
+  desc: null
+  value: 0
+log_wandb:
+  desc: null
+  value: true
+metric_options:
+  desc: null
+  value: {}
+metrics:
+  desc: null
+  value:
+  - accuracy
+options:
+  desc: null
+  value: null
+out:
+  desc: null
+  value: .
+out_items:
+  desc: null
+  value:
+  - all
+severity:
+  desc: null
+  value: 5
+show:
+  desc: null
+  value: false
+show_dir:
+  desc: null
+  value: null
+show_options:
+  desc: null
+  value: null
+tmpdir:
+  desc: null
+  value: null
+wandb_entity:
+  desc: null
+  value: zlt
+wandb_name:
+  desc: null
+  value: gaussian_noise
+wandb_prefix:
+  desc: null
+  value: null
+wandb_project:
+  desc: null
+  value: tent

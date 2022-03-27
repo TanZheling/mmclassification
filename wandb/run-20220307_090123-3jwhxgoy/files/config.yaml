@@ -1,0 +1,303 @@
+wandb_version: 1
+
+_cfg_dict:
+  desc: null
+  value:
+    checkpoint_config:
+      interval: 1
+      meta:
+        CLASSES:
+        - airplane
+        - automobile
+        - bird
+        - cat
+        - deer
+        - dog
+        - frog
+        - horse
+        - ship
+        - truck
+        config: "model = dict(\n    type='ImageClassifier',\n    backbone=dict(\n\
+          \        type='ResNet_CIFAR',\n        depth=18,\n        num_stages=4,\n\
+          \        out_indices=(3, ),\n        style='pytorch'),\n    neck=dict(type='GlobalAveragePooling'),\n\
+          \    head=dict(\n        type='LinearClsHead',\n        num_classes=10,\n\
+          \        in_channels=512,\n        loss=dict(type='CrossEntropyLoss', loss_weight=1.0)))\n\
+          dataset_type = 'CIFAR10'\nimg_norm_cfg = dict(\n    mean=[125.307, 122.961,\
+          \ 113.8575],\n    std=[51.5865, 50.847, 51.255],\n    to_rgb=False)\ntrain_pipeline\
+          \ = [\n    dict(type='RandomCrop', size=32, padding=4),\n    dict(type='RandomFlip',\
+          \ flip_prob=0.5, direction='horizontal'),\n    dict(\n        type='Normalize',\n\
+          \        mean=[125.307, 122.961, 113.8575],\n        std=[51.5865, 50.847,\
+          \ 51.255],\n        to_rgb=False),\n    dict(type='ImageToTensor', keys=['img']),\n\
+          \    dict(type='ToTensor', keys=['gt_label']),\n    dict(type='Collect',\
+          \ keys=['img', 'gt_label'])\n]\ntest_pipeline = [\n    dict(\n        type='Normalize',\n\
+          \        mean=[125.307, 122.961, 113.8575],\n        std=[51.5865, 50.847,\
+          \ 51.255],\n        to_rgb=False),\n    dict(type='ImageToTensor', keys=['img']),\n\
+          \    dict(type='Collect', keys=['img'])\n]\ndata = dict(\n    samples_per_gpu=128,\n\
+          \    workers_per_gpu=2,\n    train=dict(\n        type='CIFAR10',\n    \
+          \    data_prefix='data/cifar10',\n        pipeline=[\n            dict(type='RandomCrop',\
+          \ size=32, padding=4),\n            dict(type='RandomFlip', flip_prob=0.5,\
+          \ direction='horizontal'),\n            dict(\n                type='Normalize',\n\
+          \                mean=[125.307, 122.961, 113.8575],\n                std=[51.5865,\
+          \ 50.847, 51.255],\n                to_rgb=False),\n            dict(type='ImageToTensor',\
+          \ keys=['img']),\n            dict(type='ToTensor', keys=['gt_label']),\n\
+          \            dict(type='Collect', keys=['img', 'gt_label'])\n        ]),\n\
+          \    val=dict(\n        type='CIFAR10',\n        data_prefix='data/cifar10',\n\
+          \        pipeline=[\n            dict(\n                type='Normalize',\n\
+          \                mean=[125.307, 122.961, 113.8575],\n                std=[51.5865,\
+          \ 50.847, 51.255],\n                to_rgb=False),\n            dict(type='ImageToTensor',\
+          \ keys=['img']),\n            dict(type='Collect', keys=['img'])\n     \
+          \   ],\n        test_mode=True),\n    test=dict(\n        type='CIFAR10',\n\
+          \        data_prefix='data/cifar10',\n        pipeline=[\n            dict(\n\
+          \                type='Normalize',\n                mean=[125.307, 122.961,\
+          \ 113.8575],\n                std=[51.5865, 50.847, 51.255],\n         \
+          \       to_rgb=False),\n            dict(type='ImageToTensor', keys=['img']),\n\
+          \            dict(type='Collect', keys=['img'])\n        ],\n        test_mode=True))\n\
+          optimizer = dict(type='SGD', lr=0.1, momentum=0.9, weight_decay=0.0001)\n\
+          optimizer_config = dict(grad_clip=None)\nlr_config = dict(policy='step',\
+          \ step=[100, 150])\nrunner = dict(type='EpochBasedRunner', max_epochs=200)\n\
+          checkpoint_config = dict(interval=1)\nlog_config = dict(\n    interval=10,\n\
+          \    hooks=[\n        dict(type='TextLoggerHook'),\n        dict(\n    \
+          \        type='WandbLoggerHook',\n            init_kwargs=dict(\n      \
+          \          project='mmcls', entity='zlt',\n                name='res18bs128-cifar10-mmcls'))\n\
+          \    ])\ndist_params = dict(backend='nccl')\nlog_level = 'INFO'\nload_from\
+          \ = None\nresume_from = None\nworkflow = [('train', 1)]\nwork_dir = './work_dirs/resnet-18-b128-cifar10'\n\
+          gpu_ids = range(0, 1)\nseed = None\n"
+        mmcls_version: 0.20.1
+    data:
+      samples_per_gpu: 128
+      test:
+        data_prefix: data/cifar10
+        pipeline:
+        - mean:
+          - 125.307
+          - 122.961
+          - 113.8575
+          std:
+          - 51.5865
+          - 50.847
+          - 51.255
+          to_rgb: false
+          type: Normalize
+        - keys:
+          - img
+          type: ImageToTensor
+        - keys:
+          - img
+          type: Collect
+        test_mode: true
+        type: CIFAR10
+      train:
+        data_prefix: data/cifar10
+        pipeline:
+        - padding: 4
+          size: 32
+          type: RandomCrop
+        - direction: horizontal
+          flip_prob: 0.5
+          type: RandomFlip
+        - mean:
+          - 125.307
+          - 122.961
+          - 113.8575
+          std:
+          - 51.5865
+          - 50.847
+          - 51.255
+          to_rgb: false
+          type: Normalize
+        - keys:
+          - img
+          type: ImageToTensor
+        - keys:
+          - gt_label
+          type: ToTensor
+        - keys:
+          - img
+          - gt_label
+          type: Collect
+        type: CIFAR10
+      val:
+        data_prefix: data/cifar10
+        pipeline:
+        - mean:
+          - 125.307
+          - 122.961
+          - 113.8575
+          std:
+          - 51.5865
+          - 50.847
+          - 51.255
+          to_rgb: false
+          type: Normalize
+        - keys:
+          - img
+          type: ImageToTensor
+        - keys:
+          - img
+          type: Collect
+        test_mode: true
+        type: CIFAR10
+      workers_per_gpu: 2
+    dataset_type: CIFAR10
+    dist_params:
+      backend: nccl
+    gpu_ids:
+    - 0
+    img_norm_cfg:
+      mean:
+      - 125.307
+      - 122.961
+      - 113.8575
+      std:
+      - 51.5865
+      - 50.847
+      - 51.255
+      to_rgb: false
+    load_from: null
+    log_config:
+      hooks:
+      - type: TextLoggerHook
+      - init_kwargs:
+          entity: zlt
+          name: res18bs128-cifar10-mmcls
+          project: mmcls
+        type: WandbLoggerHook
+      interval: 10
+    log_level: INFO
+    lr_config:
+      policy: step
+      step:
+      - 100
+      - 150
+    model:
+      backbone:
+        depth: 18
+        num_stages: 4
+        out_indices:
+        - 3
+        style: pytorch
+        type: ResNet_CIFAR
+      head:
+        in_channels: 512
+        loss:
+          loss_weight: 1.0
+          type: CrossEntropyLoss
+        num_classes: 10
+        type: LinearClsHead
+      neck:
+        type: GlobalAveragePooling
+      type: ImageClassifier
+    optimizer:
+      lr: 0.1
+      momentum: 0.9
+      type: SGD
+      weight_decay: 0.0001
+    optimizer_config:
+      grad_clip: null
+    resume_from: null
+    runner:
+      max_epochs: 200
+      type: EpochBasedRunner
+    seed: null
+    test_pipeline:
+    - mean:
+      - 125.307
+      - 122.961
+      - 113.8575
+      std:
+      - 51.5865
+      - 50.847
+      - 51.255
+      to_rgb: false
+      type: Normalize
+    - keys:
+      - img
+      type: ImageToTensor
+    - keys:
+      - img
+      type: Collect
+    train_pipeline:
+    - padding: 4
+      size: 32
+      type: RandomCrop
+    - direction: horizontal
+      flip_prob: 0.5
+      type: RandomFlip
+    - mean:
+      - 125.307
+      - 122.961
+      - 113.8575
+      std:
+      - 51.5865
+      - 50.847
+      - 51.255
+      to_rgb: false
+      type: Normalize
+    - keys:
+      - img
+      type: ImageToTensor
+    - keys:
+      - gt_label
+      type: ToTensor
+    - keys:
+      - img
+      - gt_label
+      type: Collect
+    work_dir: ./work_dirs/resnet-18-b128-cifar10
+    workflow:
+    - - train
+      - 1
+_filename:
+  desc: null
+  value: mywork/resnet-18-b128-cifar10.py
+_text:
+  desc: null
+  value: "/run/determined/workdir/scratch/mmclassification/mywork/resnet-18-b128-cifar10.py\n\
+    model = dict(\n    type='ImageClassifier',\n    backbone=dict(\n        type='ResNet_CIFAR',\n\
+    \        depth=18,\n        num_stages=4,\n        out_indices=(3, ),\n      \
+    \  style='pytorch'),\n    neck=dict(type='GlobalAveragePooling'),\n    head=dict(\n\
+    \        type='LinearClsHead',\n        num_classes=10,\n        in_channels=512,\n\
+    \        loss=dict(type='CrossEntropyLoss', loss_weight=1.0),\n    ))\n# dataset\
+    \ settings\ndataset_type = 'CIFAR10'\nimg_norm_cfg = dict(\n    mean=[125.307,\
+    \ 122.961, 113.8575],\n    std=[51.5865, 50.847, 51.255],\n    to_rgb=False)\n\
+    train_pipeline = [\n    dict(type='RandomCrop', size=32, padding=4),\n    dict(type='RandomFlip',\
+    \ flip_prob=0.5, direction='horizontal'),\n    dict(type='Normalize', **img_norm_cfg),\n\
+    \    dict(type='ImageToTensor', keys=['img']),\n    dict(type='ToTensor', keys=['gt_label']),\n\
+    \    dict(type='Collect', keys=['img', 'gt_label'])\n]\ntest_pipeline = [\n  \
+    \  dict(type='Normalize', **img_norm_cfg),\n    dict(type='ImageToTensor', keys=['img']),\n\
+    \    dict(type='Collect', keys=['img'])\n]\ndata = dict(\n    samples_per_gpu=128,\n\
+    \    workers_per_gpu=2,\n    train=dict(\n        type=dataset_type,\n       \
+    \ data_prefix='data/cifar10',\n        pipeline=train_pipeline),\n    val=dict(\n\
+    \        type=dataset_type,\n        data_prefix='data/cifar10',\n        pipeline=test_pipeline,\n\
+    \        test_mode=True),\n    test=dict(\n        type=dataset_type,\n      \
+    \  data_prefix='data/cifar10',\n        pipeline=test_pipeline,\n        test_mode=True))\n\
+    \n# optimizer\noptimizer = dict(type='SGD', lr=0.1, momentum=0.9, weight_decay=0.0001)\n\
+    optimizer_config = dict(grad_clip=None)\n# learning policy\nlr_config = dict(policy='step',\
+    \ step=[100, 150])\nrunner = dict(type='EpochBasedRunner', max_epochs=200)\n\n\
+    # checkpoint saving\ncheckpoint_config = dict(interval=1)\n# yapf:disable\nlog_config\
+    \ = dict(\n    interval=10,\n    hooks=[\n        dict(type='TextLoggerHook'),\n\
+    \        dict(type='WandbLoggerHook', \n        init_kwargs=dict(project='mmcls',entity='zlt',\
+    \ name='res18bs128-cifar10-mmcls')),\n    ])\n# yapf:enable\n\ndist_params = dict(backend='nccl')\n\
+    log_level = 'INFO'\nload_from = None\nresume_from = None\nworkflow = [('train',\
+    \ 1)]"
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.12.11
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.8.12
+    start_time: 1646643683
+    t:
+      1:
+      - 1
+      - 37
+      - 41
+      3:
+      - 13
+      - 16
+      4: 3.8.12
+      5: 0.12.11
+      8:
+      - 5

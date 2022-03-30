@@ -10,7 +10,7 @@ for c in 'defocus_blur'	'pixelate' 'glass_blur' \
 s=5;
 
 
-python /run/determined/workdir/scratch/mmclassification/tools/my_tent_test.py \
+python /home/sjtu/scratch/zltan/mmclassification/tools/my_tent_test.py \
  $CONFIG /run/determined/workdir/scratch/bishe/pretrained_model/INTERN_models/vit-b.pth \
  --corruption $c --severity $s --out . --metrics accuracy --wandb-name $c ;
 

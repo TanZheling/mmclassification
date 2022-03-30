@@ -172,12 +172,13 @@ def main():
 
     # build the model and load checkpoint
     model = build_classifier(cfg.model)
-    print(model)
+    #print(model)
     fp16_cfg = cfg.get('fp16', None)
     if fp16_cfg is not None:
         wrap_fp16_model(model)
-    checkpoint = load_checkpoint(model, args.checkpoint, map_location='cpu')
-
+    checkpoint = load_checkpoint(model, args.checkpoint, map_location='cpu') 
+    #print(model)
+    #torch.save(checkpoint, '/home/sjtu/scratch/zltan/pretrained_models/load_INTERN_models.pth')
     if 'CLASSES' in checkpoint.get('meta', {}):
         CLASSES = checkpoint['meta']['CLASSES']
     else:

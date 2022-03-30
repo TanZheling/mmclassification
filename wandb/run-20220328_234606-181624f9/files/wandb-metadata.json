@@ -1,0 +1,36 @@
+{
+    "os": "Linux-5.13.0-37-generic-x86_64-with-glibc2.31",
+    "python": "3.9.7",
+    "heartbeatAt": "2022-03-29T06:46:07.003682",
+    "startedAt": "2022-03-29T06:46:06.108095",
+    "docker": null,
+    "gpu": "NVIDIA TITAN Xp",
+    "gpu_count": 4,
+    "cpu_count": 28,
+    "cuda": null,
+    "args": [
+        "mywork/vit-b.py",
+        "/home/sjtu/scratch/zltan/mim/work_dirs/vit-b-tent/epoch_1.pth",
+        "--corruption",
+        "impulse_noise",
+        "--severity",
+        "5",
+        "--out",
+        ".",
+        "--metrics",
+        "accuracy",
+        "--wandb-name",
+        "test-pth-impulse"
+    ],
+    "state": "running",
+    "program": "/home/sjtu/scratch/zltan/mmclassification/tools/my_tent_test.py",
+    "git": {
+        "remote": "https://github.com/TanZheling/mmclassification.git",
+        "commit": "45a7e1d1f9c0419b3288eaafb873ed2d112c6349"
+    },
+    "email": "gao3944677.com",
+    "root": "/data/scratch/sjtu/zltan/mmclassification",
+    "host": "gpu2",
+    "username": "sjtu",
+    "executable": "/home/sjtu/anaconda3/envs/zlt/bin/python"
+}

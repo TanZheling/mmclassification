@@ -213,7 +213,7 @@ def main():
     if fp16_cfg is not None:
         wrap_fp16_model(model)
     checkpoint = load_checkpoint(model, args.checkpoint, map_location='cpu')
-
+    torch.save(model, '/home/sjtu/scratch/zltan/pretrained_models/load_INTERN_models.pth')
     if 'CLASSES' in checkpoint.get('meta', {}):
         CLASSES = checkpoint['meta']['CLASSES']
     else:

@@ -1,5 +1,5 @@
 _base_ = [
-    '../configs/_base_/models/convnext/convnext-tiny.py',
+    '../configs/_base_/models/convnext/convnext-base.py',
     '../configs/_base_/datasets/imagenetc.py',
     '../configs/_base_/schedules/imagenet_bs1024_adamw_swin.py',
     '../configs/_base_/default_runtime.py',
@@ -10,7 +10,7 @@ model = dict(
     type='ImageClassifier',
     backbone=dict(
         type='ConvNeXt',
-        arch='tiny',
+        arch='base',
         out_indices=(3, ),
         drop_path_rate=0.4,
         gap_before_final_norm=True,
@@ -25,7 +25,7 @@ model = dict(
     head=dict(
         type='LinearClsHead',
         num_classes=1000,
-        in_channels=768,
+        in_channels=1024,
         loss=dict(type='CrossEntropyLoss', loss_weight=1.0),
     ))
 
@@ -36,9 +36,9 @@ log_config = dict(
         dict(
             type='WandbLoggerHook',
             init_kwargs=dict(
-                project='benchmark',
+                project='convnext-b-ent-test',
                 entity='zlt', 
-                name='convnext-t-img-c'
+                name='convnext-b-fog'
             )
         )
     ]

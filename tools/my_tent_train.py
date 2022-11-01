@@ -90,6 +90,7 @@ def parse_args():
     parser.add_argument('--corruption',type=str,default='')
     parser.add_argument('--severity',type=int,default=0)
     parser.add_argument('--lr',type=float,default=None)
+    parser.add_argument('--sync-bn',type=int, default=None)
 
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
@@ -114,6 +115,11 @@ def parse_args():
 
 def main():
     args = parse_args()
+
+    if args.sync_bn:
+        sync_bn = True
+    else:
+        sync_bn = False
 
     if args.log_wandb and (args.local_rank == 0):
         if has_wandb:
@@ -201,20 +207,24 @@ def main():
     #print(model)
     model.init_weights()
 
-    if args.corruption:
+    if args.corruption and args.severity:
         corruption = args.corruption
+        severity = args.severity
+        if isinstance(corruption, list):
+            args.wandb_prefix = 'multi'
+        else:
+            args.wandb_prefix = corruption+str(severity)
     if args.severity:
         severity = args.severity
 
-    if isinstance(corruption, list):
-        args.wandb_prefix = 'multi'
-    else:
-        args.wandb_prefix = corruption+str(severity)
+    
 
     data = [cfg, cfg.data.train, cfg.data.val, cfg.data.test]
     for d in data:
-        d.corruption = corruption
-        d.severity = severity
+        if args.corruption:
+            d.corruption = corruption
+        if args.severity:
+            d.severity = severity
     
 
     datasets = [build_dataset(cfg.data.train)]
@@ -233,7 +243,10 @@ def main():
     if args.local_rank == 0:
         for hook in cfg.log_config.hooks:
             if hook['type'] == 'WandbLoggerHook':
-                hook['init_kwargs']['name'] = args.wandb_prefix + hook['init_kwargs']['name']
+                if args.wandb_prefix:
+                    hook['init_kwargs']['name'] = args.wandb_prefix + hook['init_kwargs']['name']
+                else:
+                    hook['init_kwargs']['name'] = hook['init_kwargs']['name']
                 hook['init_kwargs']['config'] = copy.deepcopy(cfg)
 
     # add an attribute for visualization convenience
@@ -242,6 +255,7 @@ def main():
         datasets,
         cfg,
         distributed=distributed,
+        sync_bn=sync_bn,
         validate=(not args.no_validate),
         timestamp=timestamp,
         device='cpu' if args.device == 'cpu' else 'cuda',

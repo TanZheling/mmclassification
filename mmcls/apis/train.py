@@ -87,6 +87,7 @@ def train_model(model,
                 dataset,
                 cfg,
                 distributed=False,
+                sync_bn=False,
                 validate=False,
                 timestamp=None,
                 device=None,
@@ -116,6 +117,8 @@ def train_model(model,
         find_unused_parameters = cfg.get('find_unused_parameters', False)
         # Sets the `find_unused_parameters` parameter in
         # torch.nn.parallel.DistributedDataParallel
+        if sync_bn:
+            model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
         model = MMDistributedDataParallel(
             model.cuda(),
             device_ids=[torch.cuda.current_device()],

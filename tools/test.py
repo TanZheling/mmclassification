@@ -181,6 +181,7 @@ def main():
     #torch.save(checkpoint, '/home/sjtu/scratch/zltan/pretrained_models/load_INTERN_models.pth')
     if 'CLASSES' in checkpoint.get('meta', {}):
         CLASSES = checkpoint['meta']['CLASSES']
+        CLASSES = ['CRC_DX_TRAIN_MSIMUT','CRC_DX_TRAIN_MSS']
     else:
         from mmcls.datasets import ImageNet
         warnings.simplefilter('once')
@@ -229,6 +230,7 @@ def main():
                 scores = np.vstack(outputs)
                 pred_score = np.max(scores, axis=1)
                 pred_label = np.argmax(scores, axis=1)
+                print(CLASSES)
                 pred_class = [CLASSES[lb] for lb in pred_label]
                 res_items = {
                     'class_scores': scores,

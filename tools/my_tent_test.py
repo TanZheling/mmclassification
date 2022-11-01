@@ -38,7 +38,7 @@ def parse_args():
     parser.add_argument('--severity',type=int,default=0)
     parser.add_argument('--log-wandb', action='store_true', default=True,
                     help='log training and validation metrics to wandb')
-    parser.add_argument('--wandb-project', type=str, default='tent')
+    parser.add_argument('--wandb-project', type=str, default='remakebenchmark')
     parser.add_argument('--wandb-entity', type=str, default='zlt')
     parser.add_argument('--wandb-name', type=str, default='test')
     parser.add_argument('--wandb-prefix',type=str, default=None)

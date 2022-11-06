@@ -97,5 +97,6 @@ class Crck(BaseDataset):
             info['img_info'] = {'filename': filename}
             info['gt_label'] = np.array(gt_label, dtype=np.int64)
             info['idx'] = int(i)
+            info['patient'] = filename.split("/")[-1][17:29]
             data_infos.append(info)
         return data_infos

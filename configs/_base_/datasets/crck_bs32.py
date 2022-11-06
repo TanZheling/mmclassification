@@ -20,21 +20,21 @@ test_pipeline = [
     dict(type='Collect', keys=['img'])
 ]
 data = dict(
-    samples_per_gpu=64,
+    samples_per_gpu=32,
     workers_per_gpu=2,
     train=dict(
         type=dataset_type,
-        data_prefix='/home/sjtu/scratch/zltan/datasets/CRC_DX_train',
+        data_prefix='/home/sjtu/scratch/zltan/datasets/colon_process/CRC_DX_train',
         pipeline=train_pipeline),
     val=dict(
         type=dataset_type,
-        data_prefix='/home/sjtu/scratch/zltan/datasets/CRC_DX_test',
+        data_prefix='/home/sjtu/scratch/zltan/datasets/colon_process/CRC_DX_test',
         ann_file=None,
         pipeline=test_pipeline),
     test=dict(
         # replace `data/val` with `data/test` for standard test
         type=dataset_type,
-        data_prefix='/home/sjtu/scratch/zltan/datasets/CRC_DX_test',
+        data_prefix='/home/sjtu/scratch/zltan/datasets/colon_process/CRC_DX_test',
         ann_file=None,
         pipeline=test_pipeline))
 evaluation = dict(interval=1, metric='accuracy')

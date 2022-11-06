@@ -13,7 +13,7 @@ from mmcv.image import tensor2imgs
 from mmcv.runner import get_dist_info
 
 
-def single_gpu_test(model,
+def single_gpu_test_vote(model,
                     data_loader,
                     show=False,
                     out_dir=None,

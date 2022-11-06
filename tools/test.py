@@ -101,6 +101,9 @@ def parse_args():
         choices=['none', 'pytorch', 'slurm', 'mpi'],
         default='none',
         help='job launcher')
+    parser.add_argument(
+        '--vote',
+        action='store_true', )
     parser.add_argument('--local_rank', type=int, default=0)
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
@@ -200,7 +203,12 @@ def main():
                     'is not lower than v1.4.4'
         model.CLASSES = CLASSES
         show_kwargs = {} if args.show_options is None else args.show_options
-        outputs = single_gpu_test(model, data_loader, args.show, args.show_dir,
+        if args.vote:
+            from mmcls.apis import single_gpu_test_vote
+            outputs = single_gpu_test_vote(model, data_loader, args.show, args.show_dir,
+                                  **show_kwargs)
+        else:
+            outputs = single_gpu_test(model, data_loader, args.show, args.show_dir,
                                   **show_kwargs)
     else:
         model = MMDistributedDataParallel(

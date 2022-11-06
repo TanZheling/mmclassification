@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 CONFIG=$1
 GPUS=$2
 PORT=${PORT:-29504}

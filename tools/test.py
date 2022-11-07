@@ -105,6 +105,7 @@ def parse_args():
         '--vote',
         action='store_true', )
     parser.add_argument('--local_rank', type=int, default=0)
+    parser.add_argument('--patient_gt_csv', type=str, default=None)
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
@@ -184,7 +185,7 @@ def main():
     #torch.save(checkpoint, '/home/sjtu/scratch/zltan/pretrained_models/load_INTERN_models.pth')
     if 'CLASSES' in checkpoint.get('meta', {}):
         CLASSES = checkpoint['meta']['CLASSES']
-        CLASSES = ['CRC_DX_TRAIN_MSIMUT','CRC_DX_TRAIN_MSS']
+        #CLASSES = ['CRC_DX_TRAIN_MSIMUT','CRC_DX_TRAIN_MSS']
     else:
         from mmcls.datasets import ImageNet
         warnings.simplefilter('once')
@@ -205,8 +206,28 @@ def main():
         show_kwargs = {} if args.show_options is None else args.show_options
         if args.vote:
             from mmcls.apis import single_gpu_test_vote
-            outputs = single_gpu_test_vote(model, data_loader, args.show, args.show_dir,
+            import pandas as pd
+            outputs, patient_label_dict = single_gpu_test_vote(model, data_loader, args.show, args.show_dir,
                                   **show_kwargs)
+            print(patient_label_dict)
+            patient_gt = pd.read_csv(args.patient_gt_csv)
+            right_count = 0
+            wrong_count = 0
+            all_patient_count = len(patient_gt)
+            for i in range(len(patient_gt)):
+                if patient_label_dict[patient_gt.iloc[i,0]]>0.5:
+                    if patient_gt.iloc[i,2]=='None':
+                        right_count+=1
+                    else:
+                        wrong_count+=1
+                else:
+                    if patient_gt.iloc[i,2]=='None':
+                        wrong_count+=1
+                    else:
+                        right_count+=1
+            assert right_count+wrong_count==all_patient_count
+            print("right count:",right_count)
+            print("patient_level accuracy:",right_count/all_patient_count)
         else:
             outputs = single_gpu_test(model, data_loader, args.show, args.show_dir,
                                   **show_kwargs)

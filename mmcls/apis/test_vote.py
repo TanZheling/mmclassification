@@ -83,7 +83,7 @@ def single_gpu_test_vote(model,
         # print(data_loader.dataset[i])
         p = data_loader.dataset[i]['img_metas'].data['patient']
         results[i] = [patient_label_dict[p], 1-patient_label_dict[p]]
-    return results
+    return results, patient_label_dict
 
 
 def multi_gpu_test(model, data_loader, tmpdir=None, gpu_collect=False):

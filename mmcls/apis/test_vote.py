@@ -19,7 +19,7 @@ def single_gpu_test_vote(model,
                     out_dir=None,
                     **show_kwargs):
     model.eval()
-    torch.save(model.state_dict(), '/home/sjtu/scratch/zltan/pretrained_models/load_timm_models.pth')
+    # torch.save(model.state_dict(), '/home/sjtu/scratch/zltan/pretrained_models/load_timm_models.pth')
     results = []
     dataset = data_loader.dataset
     prog_bar = mmcv.ProgressBar(len(dataset))

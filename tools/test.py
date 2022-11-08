@@ -216,12 +216,12 @@ def main():
             all_patient_count = len(patient_gt)
             for i in range(len(patient_gt)):
                 if patient_label_dict[patient_gt.iloc[i,0]]>0.5:
-                    if patient_gt.iloc[i,2]=='None':
+                    if patient_gt.iloc[i,2]=='msi':
                         right_count+=1
                     else:
                         wrong_count+=1
                 else:
-                    if patient_gt.iloc[i,2]=='None':
+                    if patient_gt.iloc[i,2]=='msi':
                         wrong_count+=1
                     else:
                         right_count+=1

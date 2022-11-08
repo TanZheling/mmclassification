@@ -19,21 +19,21 @@ def single_gpu_test(model,
                     out_dir=None,
                     **show_kwargs):
     model.eval()
-    torch.save(model.state_dict(), '/home/sjtu/scratch/zltan/pretrained_models/load_timm_models.pth')
+    # torch.save(model.state_dict(), '/home/sjtu/scratch/zltan/pretrained_models/load_timm_models.pth')
     results = []
     dataset = data_loader.dataset
     prog_bar = mmcv.ProgressBar(len(dataset))
-    patient_vote = dict()
+    # patient_vote = dict()
     for i, data in enumerate(data_loader):
         with torch.no_grad():
             result = model(return_loss=False, **data)
 
-        for j in range(len(result)):
-            # print(type(result), result[j].shape, result[j])
-            if data['img_metas'].data[0][j]['patient'] not in patient_vote:
-                patient_vote[data['img_metas'].data[0][j]['patient']] = [result[j][0]]
-            else:
-                patient_vote[data['img_metas'].data[0][j]['patient']] += [result[j][0]]
+        # for j in range(len(result)):
+        #     # print(type(result), result[j].shape, result[j])
+        #     if data['img_metas'].data[0][j]['patient'] not in patient_vote:
+        #         patient_vote[data['img_metas'].data[0][j]['patient']] = [result[j][0]]
+        #     else:
+        #         patient_vote[data['img_metas'].data[0][j]['patient']] += [result[j][0]]
         batch_size = len(result)
         results.extend(result)
 
@@ -75,14 +75,14 @@ def single_gpu_test(model,
         for _ in range(batch_size):
             prog_bar.update()
 
-    patient_label_dict = dict()
-    for p in patient_vote.keys():
-        mean_ = sum(patient_vote[p]) / len(patient_vote[p])
-        patient_label_dict[p] = 1 if mean_ > 0.5 else 0
-    for i in range(len(results)):
-        # print(data_loader.dataset[i])
-        p = data_loader.dataset[i]['img_metas'].data['patient']
-        results[i] = [patient_label_dict[p], 1-patient_label_dict[p]]
+    # patient_label_dict = dict()
+    # for p in patient_vote.keys():
+    #     mean_ = sum(patient_vote[p]) / len(patient_vote[p])
+    #     patient_label_dict[p] = 1 if mean_ > 0.5 else 0
+    # for i in range(len(results)):
+    #     # print(data_loader.dataset[i])
+    #     p = data_loader.dataset[i]['img_metas'].data['patient']
+    #     results[i] = [patient_label_dict[p], 1-patient_label_dict[p]]
     return results
 
 

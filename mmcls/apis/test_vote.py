@@ -78,7 +78,7 @@ def single_gpu_test_vote(model,
     patient_label_dict = dict()
     for p in patient_vote.keys():
         mean_ = sum(patient_vote[p]) / len(patient_vote[p])
-        patient_label_dict[p] = 1 if mean_ > 0.5 else 0
+        patient_label_dict[p] = 1 if mean_ > 0.5 else 0 #分类为第一类则为1，否则为0
     for i in range(len(results)):
         # print(data_loader.dataset[i])
         p = data_loader.dataset[i]['img_metas'].data['patient']

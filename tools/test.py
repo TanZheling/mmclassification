@@ -16,6 +16,7 @@ from mmcls.datasets import build_dataloader, build_dataset
 from mmcls.models import build_classifier
 from mmcls.utils import setup_multi_processes
 
+
 # TODO import `wrap_fp16_model` from mmcv and delete them from mmcls
 try:
     from mmcv.runner import wrap_fp16_model
@@ -207,6 +208,7 @@ def main():
         if args.vote:
             from mmcls.apis import single_gpu_test_vote
             import pandas as pd
+            from sklearn.metrics import roc_auc_score, roc_curve, auc
             outputs, patient_label_dict = single_gpu_test_vote(model, data_loader, args.show, args.show_dir,
                                   **show_kwargs)
             print(patient_label_dict)
@@ -214,18 +216,36 @@ def main():
             right_count = 0
             wrong_count = 0
             all_patient_count = len(patient_gt)
-            for i in range(len(patient_gt)):
-                if patient_label_dict[patient_gt.iloc[i,0]]>0.5:
-                    if patient_gt.iloc[i,2]=='msi':
-                        right_count+=1
-                    else:
-                        wrong_count+=1
+            patient_pred=[]
+            patient_gtlabel=[]
+            for k, v in patient_label_dict.items():
+                patient_pred.append(v)
+                lab = patient_gt.loc[patient_gt['case_id']==k,['label']].values.tolist()[0][0]
+                print(lab)
+                real_v=0
+                if lab == 'None':
+                    real_v=1
+                    patient_gtlabel.append(1)
                 else:
-                    if patient_gt.iloc[i,2]=='msi':
-                        wrong_count+=1
-                    else:
-                        right_count+=1
-            assert right_count+wrong_count==all_patient_count
+                    patient_gtlabel.append(0)
+                if v == real_v:
+                    right_count+=1
+                else:
+                    wrong_count+=1
+            auc = roc_auc_score(patient_pred,patient_gtlabel)
+            print("auc",auc)
+            # for i in range(len(patient_gt)):
+            #     if patient_label_dict[patient_gt.iloc[i,0]]>0.5:
+            #         if patient_gt.iloc[i,2]=='msi':
+            #             right_count+=1
+            #         else:
+            #             wrong_count+=1
+            #     else:
+            #         if patient_gt.iloc[i,2]=='msi':
+            #             wrong_count+=1
+            #         else:
+            #             right_count+=1
+            #assert right_count+wrong_count==all_patient_count
             print("right count:",right_count)
             print("patient_level accuracy:",right_count/all_patient_count)
         else:

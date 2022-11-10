@@ -21,7 +21,7 @@ except ImportError:
                   'will be deprecated.'
                   'Please install mmcv through master branch.')
     from mmcls.core import EvalHook, DistEvalHook
-
+# from mmcls.core import EvalHook, DistEvalHook
 # TODO import optimizer hook from mmcv and delete them from mmcls
 try:
     from mmcv.runner import Fp16OptimizerHook
@@ -201,6 +201,11 @@ def train_model(model,
         # `EvalHook` needs to be executed after `IterTimerHook`.
         # Otherwise, it will cause a bug if use `IterBasedRunner`.
         # Refers to https://github.com/open-mmlab/mmcv/issues/1261
+        # eval_cfg['vote'] = cfg.vote
+        # eval_cfg['patient_gt_csv'] = cfg.patient_gt_csv
+        # eval_cfg['wandb_name'] = cfg.wandb_name
+        # eval_cfg['wandb_project'] = cfg.wandb_project
+        # eval_cfg['wandb_entity'] = cfg.wandb_entity
         runner.register_hook(
             eval_hook(val_dataloader, **eval_cfg), priority='LOW')
 

@@ -1,9 +1,9 @@
 _base_ = [
-    '../_base_/models/resnet18_crck.py', '../_base_/datasets/crck_bs64.py',
+    '../_base_/models/resnet18_crck.py', '../_base_/datasets/crck_bs64_frac10.py',
     '../_base_/schedules/adam_lr1e-6_ep50.py', '../_base_/default_runtime.py'
 ]
-
-runner = dict(type='EpochBasedRunner', max_epochs=200)
+vote = True
+runner = dict(type='EpochBasedRunner', max_epochs=500)
 model = dict(
     backbone=dict(
         init_cfg=dict(
@@ -23,7 +23,7 @@ log_config = dict(
             init_kwargs=dict(
                 project='med-ai',
                 entity='zlt', 
-                name='super_deepsmile_reproduce_resnet18_4xb64_lr1e-6_200e_imgpre'
+                name='super_deepsmile_reproduce_resnet18_4xb64_lr1e-6_500e_INpre_frac10'
             )
         )
     ]

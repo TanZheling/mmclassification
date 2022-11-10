@@ -5,6 +5,7 @@ from .builder import (DATASETS, PIPELINES, SAMPLERS, build_dataloader,
 from .cifar import CIFAR10, CIFAR100, CIFAR10C
 from .dataset_wrappers import (ClassBalancedDataset, ConcatDataset,
                                KFoldDataset, RepeatDataset)
+from .custom import CustomDataset
 from .imagenet import ImageNet
 from .imagenet21k import ImageNet21k
 from .mnist import MNIST, FashionMNIST
@@ -18,5 +19,5 @@ __all__ = [
     'VOC', 'MultiLabelDataset', 'build_dataloader', 'build_dataset',
     'DistributedSampler', 'ConcatDataset', 'RepeatDataset',
     'ClassBalancedDataset', 'DATASETS', 'PIPELINES', 'ImageNet21k', 'SAMPLERS',
-    'build_sampler', 'RepeatAugSampler', 'KFoldDataset','CIFAR10C','Crck'
+    'build_sampler', 'RepeatAugSampler', 'KFoldDataset','CIFAR10C','Crck','CustomDataset'
 ]

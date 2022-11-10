@@ -211,7 +211,7 @@ def main():
             from sklearn.metrics import roc_auc_score, roc_curve, auc
             outputs, patient_label_dict = single_gpu_test_vote(model, data_loader, args.show, args.show_dir,
                                   **show_kwargs)
-            print(patient_label_dict)
+            # print(patient_label_dict)
             patient_gt = pd.read_csv(args.patient_gt_csv)
             right_count = 0
             wrong_count = 0
@@ -221,9 +221,9 @@ def main():
             for k, v in patient_label_dict.items():
                 patient_pred.append(v)
                 lab = patient_gt.loc[patient_gt['case_id']==k,['label']].values.tolist()[0][0]
-                print(lab)
+                # print(lab)
                 real_v=0
-                if lab == 'None':
+                if lab == 'msi':
                     real_v=1
                     patient_gtlabel.append(1)
                 else:
@@ -232,7 +232,7 @@ def main():
                     right_count+=1
                 else:
                     wrong_count+=1
-            auc = roc_auc_score(patient_pred,patient_gtlabel)
+            auc = roc_auc_score(patient_gtlabel,patient_pred)
             print("auc",auc)
             # for i in range(len(patient_gt)):
             #     if patient_label_dict[patient_gt.iloc[i,0]]>0.5:

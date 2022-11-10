@@ -66,6 +66,11 @@ class DistEvalHook(EvalHook):
                  interval=1,
                  gpu_collect=False,
                  by_epoch=True,
+                #  vote = False,
+                #  patient_gt_csv = None,
+                #  wandb_name=None,
+                #  wandb_entity=None,
+                #  wandb_project=None,
                  **eval_kwargs):
         warnings.warn(
             'DeprecationWarning: EvalHook and DistEvalHook in mmcls will be '
@@ -78,11 +83,29 @@ class DistEvalHook(EvalHook):
         self.gpu_collect = gpu_collect
         self.by_epoch = by_epoch
         self.eval_kwargs = eval_kwargs
+        self.vote = vote
+        self.patient_gt_csv = patient_gt_csv
+        self.wandb_name = wandb_name,
+        self.wandb_entity = wandb_entity,
+        self.wandb_project = wandb_project
 
     def after_train_epoch(self, runner):
         if not self.by_epoch or not self.every_n_epochs(runner, self.interval):
             return
-        from mmcls.apis import multi_gpu_test
+        # from mmcls.apis import multi_gpu_test, multi_gpu_test_vote
+        # patient_label_dict = dict()
+        # if self.vote:
+
+        #     results,patient_label_dict = multi_gpu_test_vote(
+        #         runner.model,
+        #         self.dataloader,
+        #         tmpdir=osp.join(runner.work_dir, '.eval_hook'),
+        #         gpu_collect=self.gpu_collect,
+        #         patient_gt_csv = self.patient_gt_csv,
+        #         wandb_name=self.wandb_name,
+        #         wandb_entity=self.wandb_entity,
+        #         wandb_project=self.wandb_project)
+        # else:
         results = multi_gpu_test(
             runner.model,
             self.dataloader,
@@ -90,6 +113,33 @@ class DistEvalHook(EvalHook):
             gpu_collect=self.gpu_collect)
         if runner.rank == 0:
             print('\n')
+            # print(patient_label_dict)
+            # import pandas as pd
+            # from sklearn.metrics import roc_auc_score, roc_curve, auc
+            # patient_gt = pd.read_csv(self.patient_gt_csv)
+            # right_count = 0
+            # wrong_count = 0
+            # all_patient_count = len(patient_gt)
+            # patient_pred=[]
+            # patient_gtlabel=[]
+            # for k, v in patient_label_dict.items():
+            #     patient_pred.append(v)
+            #     lab = patient_gt.loc[patient_gt['case_id']==k,['label']].values.tolist()[0][0]
+            #     print(lab)
+            #     real_v=0
+            #     if lab == 'None':
+            #         real_v=1
+            #         patient_gtlabel.append(1)
+            #     else:
+            #         patient_gtlabel.append(0)
+            #     if v == real_v:
+            #         right_count+=1
+            #     else:
+            #         wrong_count+=1
+            # auc = roc_auc_score(patient_pred,patient_gtlabel)
+            # print("auc",auc)
+            # print("right count:",right_count)
+            # print("patient_level accuracy:",right_count/all_patient_count)
             self.evaluate(runner, results)
 
     def after_train_iter(self, runner):

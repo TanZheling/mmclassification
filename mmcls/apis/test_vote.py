@@ -11,7 +11,9 @@ import torch
 import torch.distributed as dist
 from mmcv.image import tensor2imgs
 from mmcv.runner import get_dist_info
-
+import wandb
+import pandas as pd
+from sklearn.metrics import roc_auc_score, roc_curve, auc
 
 def single_gpu_test_vote(model,
                     data_loader,
@@ -79,14 +81,16 @@ def single_gpu_test_vote(model,
     for p in patient_vote.keys():
         mean_ = sum(patient_vote[p]) / len(patient_vote[p])
         patient_label_dict[p] = 1 if mean_ > 0.5 else 0 #分类为第一类则为1，否则为0
-    for i in range(len(results)):
-        # print(data_loader.dataset[i])
-        p = data_loader.dataset[i]['img_metas'].data['patient']
-        results[i] = [patient_label_dict[p], 1-patient_label_dict[p]]
+    # for i in range(len(results)):
+    #     # print(data_loader.dataset[i])
+    #     p = data_loader.dataset[i]['img_metas'].data['patient']
+    #     results[i] = [patient_label_dict[p], 1-patient_label_dict[p]]
     return results, patient_label_dict
 
 
-def multi_gpu_test(model, data_loader, tmpdir=None, gpu_collect=False):
+def multi_gpu_test_vote(model, data_loader, tmpdir=None, 
+    gpu_collect=False, patient_gt_csv=None,wandb_name=None,
+    wandb_entity=None,wandb_project=None,tmppat=None):
     """Test model with multiple gpus.
 
     This method tests model with multiple gpus and collects the results
@@ -105,6 +109,9 @@ def multi_gpu_test(model, data_loader, tmpdir=None, gpu_collect=False):
     Returns:
         list: The prediction results.
     """
+    # wandb.init(
+    #             name=wandb_name, 
+    #             entity=wandb_entity, project=wandb_project)
     model.eval()
     results = []
     dataset = data_loader.dataset
@@ -117,9 +124,18 @@ def multi_gpu_test(model, data_loader, tmpdir=None, gpu_collect=False):
                            ' please make sure you specify an empty one.'))
         prog_bar = mmcv.ProgressBar(len(dataset))
     time.sleep(2)  # This line can prevent deadlock problem in some cases.
+    patient_vote = dict()
     for i, data in enumerate(data_loader):
         with torch.no_grad():
             result = model(return_loss=False, **data)
+
+        for j in range(len(result)):
+            # print(type(result), result[j].shape, result[j])
+            if data['img_metas'].data[0][j]['patient'] not in patient_vote:
+                patient_vote[data['img_metas'].data[0][j]['patient']] = [result[j][0]]
+            else:
+                patient_vote[data['img_metas'].data[0][j]['patient']] += [result[j][0]]
+
         if isinstance(result, list):
             results.extend(result)
         else:
@@ -130,12 +146,56 @@ def multi_gpu_test(model, data_loader, tmpdir=None, gpu_collect=False):
             for _ in range(batch_size * world_size):
                 prog_bar.update()
 
+    patient_label_dict = dict()
+    for p in patient_vote.keys():
+        mean_ = sum(patient_vote[p]) / len(patient_vote[p])
+        patient_label_dict[p] = 1 if mean_ > 0.5 else 0 #分类为第一类则为1，否则为0
     # collect results from all ranks
     if gpu_collect:
         results = collect_results_gpu(results, len(dataset))
+        patient_label_dict = collect_results_gpu(patient_label_dict, len(dataset))
     else:
         results = collect_results_cpu(results, len(dataset), tmpdir)
-    return results
+        patient_label_dict = collect_results_cpu(patient_label_dict, len(dataset),tmppat)
+    # patient_gt = pd.read_csv(patient_gt_csv)
+    # right_count = 0
+    # wrong_count = 0
+    # all_patient_count = len(patient_gt)
+    # patient_pred=[]
+    # patient_gtlabel=[]
+    # for k, v in patient_label_dict.items():
+    #     patient_pred.append(v)
+    #     lab = patient_gt.loc[patient_gt['case_id']==k,['label']].values.tolist()[0][0]
+    #     # print(lab)
+    #     real_v=0
+    #     if lab == 'msi':
+    #         real_v=1
+    #         patient_gtlabel.append(1)
+    #     else:
+    #         patient_gtlabel.append(0)
+    #     if v == real_v:
+    #         right_count+=1
+    #     else:
+    #         wrong_count+=1
+    # auc = roc_auc_score(patient_pred,patient_gtlabel)
+    # wandb.log({"patient auc":auc})
+    # print("patient auc",auc)
+    # # for i in range(len(patient_gt)):
+    # #     if patient_label_dict[patient_gt.iloc[i,0]]>0.5:
+    # #         if patient_gt.iloc[i,2]=='msi':
+    # #             right_count+=1
+    # #         else:
+    # #             wrong_count+=1
+    # #     else:
+    # #         if patient_gt.iloc[i,2]=='msi':
+    # #             wrong_count+=1
+    # #         else:
+    # #             right_count+=1
+    # #assert right_count+wrong_count==all_patient_count
+    # print("right count:",right_count)
+    # print("patient_level accuracy:",right_count/all_patient_count)
+    # wandb.log({"patient_level accuracy":right_count/all_patient_count})
+    return results,patient_label_dict
 
 
 def collect_results_cpu(result_part, size, tmpdir=None):

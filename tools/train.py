@@ -84,6 +84,10 @@ def parse_args():
     parser.add_argument('--wandb-project', type=str, default='timm')
     parser.add_argument('--wandb-entity', type=str, default='actnn')
     parser.add_argument('--wandb-name', type=str, default=None)
+    # parser.add_argument('--patient_gt_csv', type=str, default=None)
+    # parser.add_argument(
+    #     '--vote',
+    #     action='store_true', )
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
@@ -107,7 +111,7 @@ def parse_args():
 
 def main():
     args = parse_args()
-
+    
     if args.log_wandb and (args.local_rank == 0):
         if has_wandb:
             wandb.init(
@@ -116,7 +120,9 @@ def main():
         else: 
             _logger.warning("You've requested to log metrics to wandb but package not found. "
                             "Metrics not being logged to wandb, try `pip install wandb`")
-
+    # wandb.init(
+    #             name=args.experiment if args.wandb_name is None else args.wandb_name, 
+    #             entity=args.wandb_entity, project=args.wandb_project, config=args)
     cfg = Config.fromfile(args.config)
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
@@ -151,6 +157,13 @@ def main():
         init_dist(args.launcher, **cfg.dist_params)
         _, world_size = get_dist_info()
         cfg.gpu_ids = range(world_size)
+    
+    # if args.vote:
+    #     cfg.vote = True
+    #     cfg.patient_gt_csv = args.patient_gt_csv
+    #     cfg.wandb_name = args.wandb_name
+    #     cfg.wandb_project = args.wandb_project
+    #     cfg.wandb_entity = args.wandb_entity
 
     # create work_dir
     mmcv.mkdir_or_exist(osp.abspath(cfg.work_dir))
@@ -189,7 +202,7 @@ def main():
 
 
     model = build_classifier(cfg.model)
-    print(model)
+    #print(model)
     model.init_weights()
 
     datasets = [build_dataset(cfg.data.train)]
